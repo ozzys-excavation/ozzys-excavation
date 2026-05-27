@@ -1,22 +1,24 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { navLinks, navCtaText, navLogoLetter, site } from '../data/content'
 
 interface NavbarProps {
   scrolled: boolean
 }
 
-const links = [
-  { label: 'Home', href: '/' },
-  { label: 'Services', href: '/#services' },
-  { label: 'About', href: '/#about' },
-  { label: 'Contact', href: '/#contact' },
-]
-
 export default function Navbar({ scrolled }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const location = useLocation()
 
   const textColor = scrolled ? 'text-earth' : 'text-white'
   const hoverColor = 'hover:text-rust'
+
+  const handleHomeClick = (e: React.MouseEvent) => {
+    if (location.pathname === '/') {
+      e.preventDefault()
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
 
   return (
     <nav
@@ -29,28 +31,29 @@ export default function Navbar({ scrolled }: NavbarProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-3 group" onClick={handleHomeClick}>
             <div className="w-10 h-10 bg-rust rounded-lg flex items-center justify-center text-white font-display font-bold text-lg transition-transform group-hover:scale-110">
-              O
+              {navLogoLetter}
             </div>
             <div>
               <div className={`font-display font-bold text-lg leading-tight transition-colors ${textColor}`}>
-                Ozzy's Excavation
+                {site.name}
               </div>
               <div className={`text-xs leading-tight transition-colors ${
                 scrolled ? 'text-gray-600' : 'text-white/70'
               }`}>
-                Earthworks & Septic
+                {site.tagline}
               </div>
             </div>
           </Link>
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-8">
-            {links.map((link) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
+                onClick={link.href === '/' ? handleHomeClick : undefined}
                 className={`font-medium text-sm tracking-wide transition-colors ${textColor} ${hoverColor}`}
               >
                 {link.label}
@@ -60,7 +63,7 @@ export default function Navbar({ scrolled }: NavbarProps) {
               to="/#contact"
               className="bg-rust hover:bg-rust-dark text-white px-6 py-2.5 rounded-full font-medium text-sm transition-all hover:shadow-lg hover:shadow-rust/25"
             >
-              Get a Quote
+              {navCtaText}
             </Link>
           </div>
 
@@ -84,11 +87,14 @@ export default function Navbar({ scrolled }: NavbarProps) {
         {menuOpen && (
           <div className="md:hidden mt-4 pb-4 animate-fade-in-up bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-4 mx-2">
             <div className="flex flex-col gap-3">
-              {links.map((link) => (
+              {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   to={link.href}
-                  onClick={() => setMenuOpen(false)}
+                  onClick={(e) => {
+                    setMenuOpen(false)
+                    if (link.href === '/') handleHomeClick(e)
+                  }}
                   className="text-earth font-medium py-2 hover:text-rust transition-colors"
                 >
                   {link.label}
@@ -99,7 +105,7 @@ export default function Navbar({ scrolled }: NavbarProps) {
                 onClick={() => setMenuOpen(false)}
                 className="bg-rust text-white text-center px-6 py-3 rounded-full font-medium hover:bg-rust-dark transition-all"
               >
-                Get a Quote
+                {navCtaText}
               </Link>
             </div>
           </div>
