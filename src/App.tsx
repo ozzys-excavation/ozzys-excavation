@@ -1,260 +1,72 @@
-import { useMemo, useState, type FormEvent } from 'react'
-import './index.css'
+import { useEffect, useMemo, useState } from 'react'
 
-const services = [
-  {
-    title: 'Septic Services',
-    href: '/septic-services',
-    items: [
-      'AOWMA-Certified Septic System Design',
-      'Septic System Installation',
-      'System Repair, Emergency Services',
-      'Septic System Maintenance',
-      'Site Assessments & Soil Testing (PSDS Compliant)',
-      'Real Estate & Compliance Inspection',
-      'Advanced Treatment Solutions',
-      'Homeowner Septic Education',
-    ],
-  },
-  {
-    title: 'Land Clearing & Mulching',
-    items: [
-      'Forestry Mulching (Brush & Tree Clearing)',
-      'Overgrowth Control & Site Reclamation',
-      'Fire Guard & Line Clearing',
-      'Pipeline & Lease Clearing',
-      'Right-of-Way Clearing',
-    ],
-  },
-  {
-    title: 'Excavation & Earthworks',
-    items: [
-      'Basement Excavation (New & Existing)',
-      'Foundation Excavation & Backfill',
-      'Trenching & Utilitie Excation',
-      '(Water, Sewer, Gas & Electrical)',
-      'Garage Pads, Shop Pads & Building Pad',
-      'Acerage Site Prep & Lot development',
-      'Road building, Ditching, Culvert Install',
-      'Rough Grade & Final Grade',
-      'Driveway Building and Repair',
-      'Bulk Earth Moving',
-    ],
-  },
-  {
-    title: 'Dewatering & Water Transfer Services',
-    items: [
-      'Construction & Mine Dewatering',
-      'High Volume Water Transfer',
-      'Pump Rentals & Custom Pumping Packages',
-      'Emergency Flood Respone & Site Drainage',
-    ],
-  },
-  {
-    title: 'Screw Pile Installation',
-    intro: 'We provide precise Auguring & Screw-Pile installation',
-    items: [
-      'Fence & Deck post hole auguring',
-      'Conrete and fence install and design',
-      'Screw pile holes with depth-specific options, weight rating and engineered designs',
-      'signage installations, and foundation footing augering — all completed with accuracy and efficiency.',
-    ],
-  },
-  {
-    title: 'Demolition & Decommission',
-    items: [
-      'Residential And Commercial Structure Demolition',
-      'Concrete & Asphalt Removal',
-      'Shed, Garage & Outbuilding Removal',
-      'Hot Tub & Pool Removal',
-      'Junk removal',
-    ],
-  },
-  {
-    title: 'Seasonal Services',
-    items: ['Snow Removal & Hauling', 'Ice Control & Sanding', 'Commercial & Residential Snow Contracts'],
-  },
-  {
-    title: 'Landscape',
-    items: [
-      'Topsoil Spreading & Final Grading',
-      'Sod Prep & Install',
-      'Concrete Prep for Pads & Walkways',
-      'Retaining Wall Design & Install',
-      'Pressure washing services exterior and driveways',
-      'Christmas light install',
-    ],
-  },
+type Service = { title: string; slug: string; image: string; summary: string; features: string[]; detail: string }
+
+const heroBg = '/images/Hero/hero-background.jpg'
+const heroLogo = '/images/Logos/site-hero-logo.PNG'
+const footerLogo = '/images/Logos/site-footer-logo.PNG'
+const aboutOperator = '/images/Tyler/tyler.jpg'
+const septicImg = '/images/Services/septic.jpg'
+const landscapeImg = '/images/Services/landscape.jpg'
+const equipmentImg = '/images/Hero/hero-background.jpg'
+
+const services: Service[] = [
+  { title: 'Septic Services', slug: 'septic-services', image: septicImg, summary: 'AOWMA-certified septic design, installation, repair, maintenance, assessments, inspections, and homeowner education for rural Alberta properties.', features: ['AOWMA-Certified Septic System Design','Septic System Installation','System Repair & Emergency Services','Septic System Maintenance','Site Assessments & Soil Testing (PSDS Compliant)','Real Estate & Compliance Inspection','Advanced Treatment Solutions','Homeowner Septic Education'], detail: 'End-to-end private septic support for acreages, rural homes, real estate transactions, and new builds across Alberta. Ozzy’s manages soil evaluation, planning, installation, repair, upgrades, inspections, education, and commissioning with a focus on long-term performance and provincial compliance.' },
+  { title: 'Land Clearing & Mulching', slug: 'land-clearing-mulching', image: equipmentImg, summary: 'Forestry mulching, brush clearing, reclamation, fire guards, lease clearing, and right-of-way preparation for clean, usable land.', features: ['Forestry Mulching (Brush & Tree Clearing)','Overgrowth Control & Site Reclamation','Fire Guard & Line Clearing','Pipeline & Lease Clearing','Right-of-Way Clearing'], detail: 'Clean, efficient clearing for rural lots, leases, access routes, acreages, and construction-ready sites. We remove overgrowth, open access, reclaim usable land, and prepare your property for the next phase.' },
+  { title: 'Excavation & Earthworks', slug: 'excavation-earthworks', image: equipmentImg, summary: 'Basements, foundations, trenching, pads, acreage site prep, roads, culverts, grading, driveways, and bulk earth moving.', features: ['Basement Excavation (New & Existing)','Foundation Excavation & Backfill','Trenching & Utilities Excavation (Water, Sewer, Gas & Electrical)','Garage Pads, Shop Pads & Building Pads','Acreage Site Prep & Lot Development','Road Building, Ditching, Culvert Installation','Rough Grade & Final Grade','Driveway Building & Repair','Bulk Earth Moving'], detail: 'Heavy-civil experience applied to residential, commercial, acreage, and rural site development. From cuts and fills to trenching, pads, drainage, roads, and final grade, Ozzy’s helps turn your land plan into buildable ground.' },
+  { title: 'Dewatering & Water Transfer Services', slug: 'dewatering-water-transfer', image: equipmentImg, summary: 'Construction dewatering, mine dewatering, high-volume water transfer, pump rentals, emergency flood response, and site drainage.', features: ['Construction & Mine Dewatering','High Volume Water Transfer','Pump Rentals & Custom Pumping Packages','Emergency Flood Response & Site Drainage'], detail: 'Responsive water handling for wet sites, flood conditions, construction access, and high-volume transfer needs. We help protect schedules, stabilize sites, and move water safely and efficiently.' },
+  { title: 'Screw Pile Installation', slug: 'screw-pile-installation', image: equipmentImg, summary: 'Precise augering, screw-pile installation, post holes, fence and concrete preparation, signage supports, and foundation footing augering.', features: ['Precise Augering & Screw-Pile Installation','Fence & Deck Post Hole Augering','Concrete and Fence Install & Design','Screw pile holes with depth-specific options, weight ratings, and engineered designs','Signage Installations','Foundation Footing Augering'], detail: 'Accurate augering and screw-pile installation for decks, fences, signage, foundations, concrete preparation, and engineered support requirements. Built for alignment, load planning, and durable installation.' },
+  { title: 'Demolition & Decommission', slug: 'demolition-decommission', image: equipmentImg, summary: 'Residential and commercial structure demolition, concrete and asphalt removal, outbuilding removal, hot tub and pool removal, and junk hauling.', features: ['Residential & Commercial Structure Demolition','Concrete & Asphalt Removal','Shed, Garage & Outbuilding Removal','Hot Tub & Pool Removal','Junk Removal'], detail: 'Safe, organized removal and cleanup for structures, concrete, asphalt, outbuildings, pools, hot tubs, and site clutter. We help clear the way for new construction, sale preparation, or property improvement.' },
+  { title: 'Seasonal Services', slug: 'seasonal-services', image: equipmentImg, summary: 'Snow removal, snow hauling, ice control, sanding, and seasonal commercial or residential snow contracts.', features: ['Snow Removal & Hauling','Ice Control & Sanding','Commercial & Residential Snow Contracts'], detail: 'Reliable winter support for residential and commercial clients who need access maintained, liability reduced, and snow managed through Alberta conditions.' },
+  { title: 'Landscape', slug: 'landscape-services', image: landscapeImg, summary: 'Topsoil spreading, final grading, sod prep, concrete prep, retaining walls, pressure washing, and Christmas light installation.', features: ['Topsoil Spreading & Final Grading','Sod Prep & Install','Concrete Prep for Pads & Walkways','Retaining Wall Design & Install','Pressure Washing Services (Exteriors and Driveways)','Christmas Light Installation'], detail: 'Finish your property with grading, soil, sod preparation, retaining walls, concrete prep, pressure washing, and seasonal exterior services that make the site usable, clean, and complete.' },
 ]
 
-const faqs = [
-  ['Do you provide septic services for acreages and rural homes?', 'Yes. Ozzy’s Energy Services Ltd. provides end-to-end private septic system solutions for acreages, rural homes, and new builds across Alberta.'],
-  ['Are you AOWMA-certified?', 'Yes. Ozzy’s provides AOWMA-certified septic system assessment, design, installation, repair, and upgrade services.'],
-  ['What excavation services are available?', 'Services include basement excavation, foundation excavation and backfill, trenching, acreage site preparation, road building, ditching, culvert installation, grading, driveway work, and bulk earth moving.'],
-  ['How do I request a quote?', 'Use the request form with your scope, area dimensions, time frame, budget, and site address, or contact Ozzy’s Excavation by phone or email.'],
+const primaryCities = ['Calgary','Edmonton','Red Deer','Lethbridge','Airdrie','Grande Prairie','Medicine Hat','St. Albert','Spruce Grove','Leduc','Fort McMurray']
+const towns = ['Cochrane','Okotoks','Chestermere','Stony Plain','Sylvan Lake','Canmore','Strathmore','High River','Fort Saskatchewan','Beaumont','Morinville']
+const counties = ['Rocky View County','Foothills County','Parkland County','Strathcona County','Wheatland County','Mountain View County','Sturgeon County']
+const associationLogos = [
+  { src: '/images/Footer/AOWMA.jpg', alt: 'AOWMA industry association logo' },
+  { src: '/images/Footer/ACSApng.png', alt: 'ACSA safety association logo' },
+  { src: '/images/Footer/ESC.png', alt: 'ESC safety certification logo' },
+  { src: '/images/Footer/cor.png', alt: 'Certificate of Recognition COR logo' },
 ]
 
-function App() {
-  const [submitted, setSubmitted] = useState(false)
+function scrollTo(id: string) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
 
-  const schema = useMemo(() => ({
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'LocalBusiness',
-        '@id': 'https://www.ozzysexcavation.ca/#business',
-        name: "Ozzy's Excavation",
-        legalName: "Ozzy’s Energy Services Ltd.",
-        url: 'https://www.ozzysexcavation.ca/',
-        telephone: '+1-778-209-1414',
-        email: 'admin@ozzysexcavation.ca',
-        image: 'https://www.ozzysexcavation.ca/images/service-equipment.jpg',
-        areaServed: ['Calgary', 'Alberta', 'Acreages', 'Rural homes'],
-        description: 'Professional excavation, earthworks, septic, dewatering, land clearing, screw pile, demolition, seasonal, and landscape services in Alberta.',
-      },
-      {
-        '@type': 'FAQPage',
-        mainEntity: faqs.map(([question, answer]) => ({
-          '@type': 'Question',
-          name: question,
-          acceptedAnswer: { '@type': 'Answer', text: answer },
-        })),
-      },
-    ],
-  }), [])
-
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setSubmitted(true)
-  }
-
-  return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <header className="site-header">
-        <a className="brand" href="/" aria-label="Ozzy's Excavation home">
-          <img src="/images/logo.png" alt="Ozzys Excavation" />
-          <span>Ozzy's Excavation Earthworks and Septic</span>
-        </a>
-        <nav aria-label="Primary navigation">
-          <a href="/">Home</a>
-          <a href="/septic-services">Septic Services</a>
-          <a href="/septic-system-assessment-form">Septic System Assesment Form</a>
-          <a href="#services">Services</a>
-          <a href="#about">About</a>
-          <a href="#contact">Contact Us</a>
-        </nav>
-      </header>
-
-      <main>
-        <section className="hero" id="home">
-          <div className="hero-overlay" />
-          <div className="hero-content">
-            <p className="eyebrow">AWOMA Certified & Insured</p>
-            <h1>Expert Excavation & Site Solutions, Certified Septic Installer.</h1>
-            <p>Your Land. Your Vision. Our Expertise.</p>
-            <a className="button" href="#contact">Request a Quote</a>
-          </div>
-        </section>
-
-        <section className="section split" id="about">
-          <div>
-            <p className="eyebrow">About</p>
-            <h2>Ozzy’s Energy Services Ltd.</h2>
-            <p>At Ozzy’s Energy Services Ltd., we provide end-to-end private septic system solutions for acreages, rural homes, and new builds across Alberta. As AOWMA-certified professionals, we are qualified to assess, design, install, repair, and upgrade septic systems that meet provincial standards and perform reliably for years to come.</p>
-            <p>Whether you’re building a new home, replacing a failed system, expanding your property, or correcting drainage issues, We take care of everything from initial soil evaluation and permitting to final inspection and commissioning.</p>
-            <a className="button secondary" href="#contact">Book a Consultation</a>
-          </div>
-          <div className="why-card">
-            <h3>Why Clients Choose Us</h3>
-            <ul>
-              <li>Certified & AOWMA-Approved</li>
-              <li>Fully Insured & Code-Compliant</li>
-              <li>Modern Equipment, Skilled Operators</li>
-              <li>Transparent Pricing, No Hidden Fees</li>
-              <li>Reliable workmanship built for Alberta Conditions</li>
-            </ul>
-          </div>
-        </section>
-
-        <section className="section services" id="services">
-          <p className="eyebrow">Our Services</p>
-          <h2>Septic, Earthwork and Excavation</h2>
-          <div className="service-grid">
-            {services.map((service) => (
-              <article className="service-card" key={service.title}>
-                <h3>{service.title}</h3>
-                {service.intro && <p>{service.intro}</p>}
-                {service.title === 'Septic Services' && <p>Our Septic Services include:</p>}
-                <ul>
-                  {service.items.map((item) => <li key={item}>{item}</li>)}
-                </ul>
-                {service.href ? <a href={service.href}>Learn More</a> : null}
-                <a className="quote-link" href="#contact">Request a Quote</a>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="section cta-band">
-          <h2>Additional Services</h2>
-          <h3>Lets get your project moving.</h3>
-          <p>Whether you're reshaping your lot, prepping for new construction, or planning a custom excavation project, we're here to make it simple. Share a few details about your site and we'll follow up quickly with next steps.</p>
-        </section>
-
-        <section className="section split founder">
-          <img src="/images/owner-ty-osborne.jpg" alt="Ty Osborne, President and Founder of Ozzy's Excavation" />
-          <div>
-            <h2>Ty Osborne</h2>
-            <p className="eyebrow">President/ Founder</p>
-            <p>I grew up obsessed with machines, and that childhood passion shaped a career across major heavy-civil and inner-city construction projects. After nearly a decade in the industry, I built Ozzy’s Excavation & Earthworks to turn acreages, backyards, and client visions into reality while delivering honest, high-quality work every time.</p>
-            <h3>Your land. Your vision. Our expertise.</h3>
-          </div>
-        </section>
-
-        <section className="section contact" id="contact">
-          <div>
-            <p className="eyebrow">Request a Quote</p>
-            <h2>Tell us about your site.</h2>
-            <p>Ozzys Excavation</p>
-            <p><a href="tel:17782091414">778-209-1414</a></p>
-            <p><a href="mailto:admin@ozzysexcavation.ca">admin@ozzysexcavation.ca</a></p>
-          </div>
-          <form onSubmit={onSubmit}>
-            <label>First name<input name="firstName" required /></label>
-            <label>Last name<input name="lastName" required /></label>
-            <label>Email<input name="email" type="email" required /></label>
-            <label>Phone<input name="phone" type="tel" required /></label>
-            <label>Scope of services and project outcome required<textarea name="scope" required /></label>
-            <label>Area Dimensions (DxWxL or Soft)<input name="dimensions" /></label>
-            <label>Time frame<input name="timeFrame" /></label>
-            <label>Budget<input name="budget" /></label>
-            <label>Site Address<input name="siteAddress" /></label>
-            <label className="consent"><input name="smsConsent" type="checkbox" required /> I consent to receive calls/texts about my quote request. Message and data rates may apply. Reply STOP to opt out.</label>
-            <button type="submit">Submit</button>
-            {submitted && <p role="status" className="success">Thanks — this demo form is ready to wire to email or CRM.</p>}
-          </form>
-        </section>
-
-        <section className="section faq">
-          <p className="eyebrow">Questions</p>
-          <h2>Septic, excavation, and site service FAQs</h2>
-          {faqs.map(([q, a]) => (
-            <details key={q}>
-              <summary>{q}</summary>
-              <p>{a}</p>
-            </details>
-          ))}
-        </section>
-      </main>
-
-      <footer>
-        <strong>Ozzys Excavation</strong>
-        <span>778-209-1414</span>
-        <a href="mailto:admin@ozzysexcavation.ca">admin@ozzysexcavation.ca</a>
-      </footer>
-    </>
-  )
+function Navbar() {
+  return <header className="sticky top-0 z-40 border-b border-[#E0DBD7] bg-white/95 backdrop-blur"><nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4"><button onClick={() => scrollTo('home')} className="flex items-center gap-3 text-left"><img src={footerLogo} alt="Ozzy's Excavation logo" className="h-12 w-auto" /><span><span className="block text-xl font-black tracking-tight text-[#40190E]">Ozzy's Excavation Services</span><span className="text-xs font-bold uppercase tracking-[0.25em] text-[#B5553A]">Septic and Earthworks - Alberta</span></span></button><div className="hidden items-center gap-6 text-sm font-bold text-[#40190E] md:flex"><button onClick={() => scrollTo('services')}>Services</button><button onClick={() => scrollTo('about')}>About</button><button onClick={() => scrollTo('coverage')}>Service Areas</button><a href="tel:+177****1414">778-209-1414</a><button onClick={() => scrollTo('quote')} className="rounded-full bg-[#D5560B] px-5 py-3 text-white shadow-lg shadow-orange-900/20">Request a Quote</button></div><button onClick={() => scrollTo('quote')} className="rounded-full bg-[#D5560B] px-4 py-2 text-sm font-black text-white md:hidden">Quote</button></nav></header>
 }
 
-export default App
+function Hero() {
+  return <section id="home" className="relative isolate min-h-[760px] overflow-hidden bg-[#40190E]"><img src={heroBg} alt="Excavator preparing an Alberta site" className="absolute inset-0 -z-20 h-full w-full object-cover" /><div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#40190E]/95 via-[#40190E]/78 to-[#40190E]/35" /><div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-28 text-white lg:min-h-[760px] lg:grid-cols-[1.05fr_0.95fr]"><div><p className="mb-5 max-w-max rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-black uppercase tracking-[0.18em] text-white/90">AOWMA Certified & Insured</p><h1 className="max-w-5xl text-4xl font-black leading-tight md:text-6xl">Ozzy's Excavation<br /><span className="block whitespace-nowrap text-xl leading-tight md:text-3xl lg:text-[2.05rem] xl:text-[2.25rem]">Professional Septic Installation</span><span className="block whitespace-nowrap text-xl leading-tight md:text-3xl lg:text-[2.05rem] xl:text-[2.25rem]">Earthwork &amp; Excavation Services</span><span className="block whitespace-nowrap text-xl leading-tight md:text-3xl lg:text-[2.05rem] xl:text-[2.25rem]">Across Alberta</span></h1><p className="mt-6 max-w-3xl text-xl leading-8 text-white/90">Comprehensive mechanical and site development operations for acreages, rural homes, commercial properties, construction sites, water transfer, land clearing, demolition, screw piles, grading, and private septic systems.</p><div className="mt-10 flex flex-wrap gap-4"><button onClick={() => scrollTo('services')} className="rounded-full border-2 border-white bg-white px-7 py-4 font-black text-[#40190E]">Our Services</button><button onClick={() => scrollTo('quote')} className="rounded-full bg-[#D5560B] px-7 py-4 font-black text-white shadow-xl shadow-black/30">Request a Quote</button></div></div><div className="flex justify-center lg:justify-end"><div className="rounded-[2rem] border border-white/20 bg-white/90 p-6 shadow-2xl shadow-black/40 backdrop-blur"><img src={heroLogo} alt="Ozzy's Excavation hero logo" className="max-h-[360px] w-full max-w-md object-contain" /></div></div></div></section>
+}
+
+function About() { return <section id="about" className="bg-white px-5 py-24"><div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center"><img src={aboutOperator} alt="Ty Osborne, President and Founder of Ozzy's Excavation" className="h-[560px] w-full rounded-[2rem] object-cover object-top shadow-2xl" /><div><p className="font-black uppercase tracking-[0.2em] text-[#B5553A]">About Ozzy's Excavation Services</p><h2 className="mt-4 text-4xl font-black text-[#40190E] md:text-5xl">Your land. Your vision.<br />Our expertise.</h2><p className="mt-6 text-lg leading-8 text-[#40190E]">At Ozzy's Excavation Services, we provide end-to-end private septic system solutions for acreages, rural homes, and new builds across Alberta. As AOWMA-certified professionals, we are qualified to assess, design, install, repair, and upgrade septic systems that meet provincial standards and perform reliably for years to come.</p><p className="mt-5 text-lg leading-8 text-[#40190E]">Ty Osborne grew up obsessed with machines, and that passion shaped a career across major heavy-civil and inner-city construction projects. After nearly a decade in the industry, Ozzy’s Excavation & Earthworks was built to turn acreages, backyards, and client visions into reality while delivering honest, high-quality work every time.</p><div className="mt-8 grid gap-3 sm:grid-cols-2">{['Certified & AOWMA-Approved','Fully Insured & Code-Compliant','Modern Equipment, Skilled Operators','Transparent Pricing, No Hidden Fees','Reliable workmanship built for Alberta conditions','Regulatory compliance and reliability guarantee'].map(x=><div key={x} className="rounded-2xl bg-[#E0DBD7] px-4 py-3 font-bold text-[#40190E]">✓ {x}</div>)}</div></div></div></section> }
+
+function ServiceCard({ service }: { service: Service }) { const isSeptic = service.slug === 'septic-services'; return <article className="flex h-full flex-col overflow-hidden rounded-[2rem] border border-[#E0DBD7] bg-white shadow-xl shadow-[#40190E]/10 transition hover:-translate-y-1 hover:shadow-2xl"><img src={service.image} alt={`${service.title} by Ozzy's Excavation in Alberta`} className="h-56 w-full object-cover" /><div className="flex flex-1 flex-col p-7"><h3 className="text-2xl font-black text-[#40190E]">{service.title}</h3><p className="mt-4 flex-1 leading-7 text-[#40190E]">{service.summary}</p><div className="mt-7 flex flex-wrap gap-3"><a href={`/services/${service.slug}`} className="rounded-full border-2 border-[#B5553A] px-5 py-3 font-black text-[#B5553A] transition hover:bg-[#B5553A] hover:text-white">Learn More</a>{isSeptic ? <a href="/septic-assessment-form" className="rounded-full bg-[#D5560B] px-5 py-3 font-black text-white transition hover:bg-[#B5553A]">Complete Septic Assessment Form</a> : <button onClick={() => scrollTo('quote')} className="rounded-full bg-[#D5560B] px-5 py-3 font-black text-white transition hover:bg-[#B5553A]">Request a Quote</button>}</div></div></article> }
+
+function Services() { return <section id="services" className="bg-[#E0DBD7] px-5 py-24"><div className="mx-auto max-w-7xl"><div className="max-w-3xl"><p className="font-black uppercase tracking-[0.2em] text-[#B5553A]">Our Services</p><h2 className="mt-4 text-4xl font-black text-[#40190E] md:text-5xl">Septic, earthwork and excavation services built for Alberta conditions.</h2></div><div className="mt-12 grid gap-8 md:grid-cols-2 xl:grid-cols-4">{services.map((s)=><ServiceCard key={s.title} service={s} />)}</div></div></section> }
+
+function ServicePage({ service }: { service: Service }) { return <><Navbar /><main><section className="relative isolate min-h-[520px] overflow-hidden bg-[#40190E]"><img src={service.image} alt={`${service.title} in Alberta`} className="absolute inset-0 -z-20 h-full w-full object-cover" /><div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#40190E]/95 via-[#40190E]/75 to-[#40190E]/35" /><div className="mx-auto flex max-w-7xl flex-col justify-center px-5 py-24 text-white lg:min-h-[520px]"><a href="/#services" className="mb-6 font-black text-white/80 hover:text-white">← All Services</a><p className="mb-4 max-w-max rounded-full bg-[#D5560B] px-4 py-2 text-sm font-black uppercase tracking-[0.18em] text-white">Alberta Service Page</p><h1 className="max-w-4xl text-4xl font-black leading-tight md:text-6xl">{service.title}</h1><p className="mt-6 max-w-3xl text-xl leading-8 text-white/90">{service.summary}</p><div className="mt-10">{service.slug === 'septic-services' ? <a href="/septic-assessment-form" className="rounded-full bg-[#D5560B] px-7 py-4 font-black text-white shadow-xl shadow-black/30">Complete Septic Assessment Form</a> : <a href="/#quote" className="rounded-full bg-[#D5560B] px-7 py-4 font-black text-white shadow-xl shadow-black/30">Request a Quote</a>}</div></div></section><section className="bg-white px-5 py-20"><div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]"><div><p className="font-black uppercase tracking-[0.2em] text-[#B5553A]">What We Do</p><h2 className="mt-4 text-4xl font-black text-[#40190E]">Professional {service.title} across Alberta.</h2><p className="mt-6 text-lg leading-8 text-[#40190E]">{service.detail}</p></div><div className="rounded-[2rem] bg-[#E0DBD7] p-7"><h3 className="text-2xl font-black text-[#40190E]">Service Includes</h3><ul className="mt-6 grid gap-4 text-[#40190E] sm:grid-cols-2">{service.features.map(f=><li key={f} className="flex gap-3 rounded-2xl bg-white p-4 leading-6"><span className="mt-1 h-3 w-3 shrink-0 rounded-full bg-[#D5560B]" /> <span>{f}</span></li>)}</ul></div></div></section><Quote /><ServiceAreas /></main><Footer /><ElevenLabsChatBubble /></> }
+
+function Quote() { const [scope,setScope]=useState(''); const handleScope=(value:string)=>{ setScope(value); if (value === 'septic-services') window.location.href='/septic-assessment-form' }; return <section id="quote" className="bg-[#40190E] px-5 py-24 text-white"><div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]"><div><p className="font-black uppercase tracking-[0.2em] text-[#D5560B]">Request a Quote</p><h2 className="mt-4 text-4xl font-black md:text-5xl">Let’s get your project moving.</h2><p className="mt-6 text-lg leading-8 text-white/90">Whether you're reshaping your lot, prepping for new construction, repairing a septic issue, or planning custom excavation work, share a few details and Ozzy’s will follow up with next steps.</p><div className="mt-8 space-y-3 text-white/90"><a className="block text-xl font-black" href="tel:+177****1414">778-209-1414</a><a className="block text-xl font-black" href="mailto:admin@ozzysexcavation.ca">admin@ozzysexcavation.ca</a></div></div><form className="grid gap-4 rounded-[2rem] bg-white p-6 text-[#40190E]" action="mailto:admin@ozzysexcavation.ca" method="post"><select required name="scope" value={scope} onChange={e=>handleScope(e.target.value)} className="rounded-xl border border-[#E0DBD7] p-4 text-base"><option value="">Scope of services and project outcome required</option>{services.map(s=><option key={s.title} value={s.slug}>{s.title}</option>)}</select><div className="grid gap-4 sm:grid-cols-2"><input required className="rounded-xl border border-[#E0DBD7] p-4 text-base" placeholder="First name" /><input required className="rounded-xl border border-[#E0DBD7] p-4 text-base" placeholder="Last name" /></div><div className="grid gap-4 sm:grid-cols-2"><input required type="email" className="rounded-xl border border-[#E0DBD7] p-4 text-base" placeholder="Email" /><input type="tel" className="rounded-xl border border-[#E0DBD7] p-4 text-base" placeholder="Phone" /></div><div className="grid gap-4 sm:grid-cols-2"><input className="rounded-xl border border-[#E0DBD7] p-4 text-base" placeholder="Area dimensions (D x W x L or sq ft)" /><input className="rounded-xl border border-[#E0DBD7] p-4 text-base" placeholder="Time frame" /></div><div className="grid gap-4 sm:grid-cols-2"><input className="rounded-xl border border-[#E0DBD7] p-4 text-base" placeholder="Budget" /><input className="rounded-xl border border-[#E0DBD7] p-4 text-base" placeholder="Site address / location" /></div><textarea className="min-h-32 rounded-xl border border-[#E0DBD7] p-4 text-base" placeholder="Tell us about access, drainage, soil, schedule, photos available, or any compliance concerns." /><button className="rounded-full bg-[#D5560B] px-6 py-4 font-black text-white">Submit Quote Request</button></form></div></section> }
+
+function LocationColumn({ title, items }: { title: string; items: string[] }) { return <div><h3 className="mb-4 text-lg font-black text-white">{title}</h3><div className="flex flex-wrap gap-2">{items.map(item=><span key={item} className="rounded-full bg-white/10 px-3 py-2 text-sm text-white/85">{item}</span>)}</div></div> }
+
+function ServiceAreas() { return <section id="coverage" className="bg-[#40190E] px-5 py-20 text-white"><div className="mx-auto max-w-7xl"><p className="font-black uppercase tracking-[0.2em] text-[#D5560B]">Service Areas</p><h2 className="mt-4 text-4xl font-black md:text-5xl">Serving Communities Across Alberta</h2><p className="mt-5 max-w-4xl text-lg leading-8 text-white/80">Location optimization matrix for rural septic, acreage excavation, construction dewatering, land clearing, and site development searches across Alberta.</p><div className="mt-10 grid gap-8 lg:grid-cols-3"><LocationColumn title="Primary Cities" items={primaryCities} /><LocationColumn title="Fast-Growing Towns & Core Commuter Belts" items={towns} /><LocationColumn title="Surrounding Regional Counties" items={counties} /></div></div></section> }
+
+function Footer() { return <footer className="bg-[#260f08] px-5 py-16 text-white"><div className="mx-auto max-w-7xl"><div className="grid gap-10 lg:grid-cols-4"><div><h2 className="text-2xl font-black">Ozzy's Excavation</h2><p className="mt-4 text-white/80">Professional septic, earthwork, excavation, water transfer, land clearing, demolition, screw pile, seasonal, and landscape services across Alberta.</p><div className="mt-5 space-y-2"><a className="block font-bold" href="tel:+177****1414">778-209-1414</a><a className="block font-bold" href="mailto:admin@ozzysexcavation.ca">admin@ozzysexcavation.ca</a></div></div><div><h3 className="text-lg font-black">Compliance Notes</h3><p className="mt-4 text-white/80">AOWMA-certified septic support. PSDS-compliant site assessments and soil testing. Fully insured, code-compliant operations with transparent communication from initial assessment to final inspection.</p></div><div><h3 className="text-lg font-black">Service Links</h3><div className="mt-4 grid gap-2 text-white/80">{services.map(s=><a key={s.title} href={`/services/${s.slug}`} className="text-left hover:text-white">{s.title}</a>)}</div></div><div><h3 className="text-lg font-black">Legal</h3><div className="mt-4 grid gap-2 text-white/80"><a href="/terms-of-service" className="font-bold hover:text-white">Terms of Service</a><a href="/privacy-compliance" className="font-bold hover:text-white">Privacy Compliance</a></div><p className="mt-4 text-white/80">© {new Date().getFullYear()} Ozzy's Excavation Services All rights reserved. Website optimized for Alberta excavation, septic, earthwork, and rural site development inquiries.</p></div></div><div className="mt-12 rounded-[2rem] border border-white/15 bg-white/5 p-6"><h3 className="text-xl font-black">Industry Associations & Compliance</h3><p className="mt-3 max-w-3xl text-white/80">Ozzy’s Excavation operates with recognized industry, safety, and regulatory standards for Alberta septic, excavation, and site development work.</p><div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">{associationLogos.map(logo=><div key={logo.src} className="flex min-h-28 items-center justify-center rounded-2xl bg-white p-4"><img src={logo.src} alt={logo.alt} className="max-h-20 w-auto object-contain" loading="lazy" /></div>)}</div></div></div></footer> }
+
+type IntakeData = Record<string, string>
+const intakeInitial: IntakeData = { firstName:'', lastName:'', email:'', phone:'', address:'', requirements:'', houseSize:'', occupants:'', occupantNotes:'', bedrooms:'', bathrooms:'', products:'', waterFixtures:'', waterSource:'', neighbouringWells:'', covenants:'', hobbies:'', lifestyle:'', otherBuildings:'', homeBusiness:'', comments:'' }
+const intakeSteps = ['Contact', 'Property', 'Household', 'Water Use', 'Site Details', 'Review']
+function Field({ label, children, help }: { label: string; children: React.ReactNode; help?: string }) { return <label className="grid gap-2"><span className="font-black text-[#40190E]">{label}</span>{help && <span className="text-sm leading-6 text-[#40190E]/70">{help}</span>}{children}</label> }
+function SepticAssessmentPage() { const [step,setStep]=useState(0); const [sent,setSent]=useState(false); const [data,setData]=useState<IntakeData>(intakeInitial); const update=(key:string,value:string)=>setData(prev=>({...prev,[key]:value})); const input='rounded-xl border border-[#E0DBD7] p-4 text-base'; const next=()=>setStep(s=>Math.min(s+1,intakeSteps.length-1)); const back=()=>setStep(s=>Math.max(s-1,0)); const submit=async()=>{ const payload={ doctype:'Septic Assessment', prospect:{ firstName:data.firstName, lastName:data.lastName, email:data.email, phone:data.phone, serviceInterest:'Septic Services', source:'ozzysexcavation.ca/septic-assessment-form' }, assessment:data, submittedAt:new Date().toISOString(), source:'septic-assessment-form' }; const webhook=import.meta.env.VITE_SEPTIC_INTAKE_WEBHOOK_URL; if (webhook) await fetch(webhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(()=>undefined); const body=encodeURIComponent([`doctype: ${payload.doctype}`, `prospectName: ${data.firstName} ${data.lastName}`, `prospectEmail: ${data.email}`, `prospectPhone: ${data.phone}`, '', 'Assessment:', ...Object.entries(data).map(([k,v])=>`${k}: ${v}`), '', `submittedAt: ${payload.submittedAt}`].join('\n')); window.location.href=`mailto:support@stryqsystems.com?subject=Septic Assessment Form Submission&body=${body}`; setSent(true) }; return <><SeoJsonLd /><Navbar /><main><section className="bg-[#40190E] px-5 py-20 text-white"><div className="mx-auto max-w-5xl"><p className="font-black uppercase tracking-[0.2em] text-[#D5560B]">Required Before Septic Assessment</p><h1 className="mt-4 text-4xl font-black md:text-6xl">Septic System Assessment Form</h1><p className="mt-6 max-w-3xl text-lg leading-8 text-white/90">Septic installation inquiries require this intake form before assessment. The questions help Ozzy's Excavation Services understand your property, household use, water systems, site constraints, and Alberta septic compliance needs before scheduling next steps.</p></div></section><section className="bg-white px-5 py-16"><div className="mx-auto max-w-5xl rounded-[2rem] border border-[#E0DBD7] bg-[#E0DBD7]/40 p-5 shadow-xl md:p-8"><div className="mb-8 grid gap-2 sm:grid-cols-6">{intakeSteps.map((name,i)=><button key={name} onClick={()=>setStep(i)} className={`rounded-full px-4 py-3 text-sm font-black ${i===step?'bg-[#D5560B] text-white':'bg-white text-[#40190E]'}`}>{i+1}. {name}</button>)}</div>{sent ? <div className="rounded-3xl bg-white p-8 text-[#40190E]"><h2 className="text-3xl font-black">Thanks — your septic assessment information is ready.</h2><p className="mt-4 leading-7">Your email app should open with the completed intake details. After submission, Ozzy's Excavation Services will review the information and follow up about assessment, permitting, soil testing, site requirements, and installation/repair next steps.</p><a href="/services/septic-services" className="mt-6 inline-block rounded-full bg-[#D5560B] px-6 py-3 font-black text-white">Back to Septic Services</a></div> : <div className="rounded-3xl bg-white p-6 md:p-8"><form onSubmit={(e)=>{e.preventDefault(); step<intakeSteps.length-1?next():submit()}} className="grid gap-5">{step===0 && <div className="grid gap-5 md:grid-cols-2"><Field label="First Name"><input required className={input} value={data.firstName} onChange={e=>update('firstName',e.target.value)} /></Field><Field label="Last Name"><input required className={input} value={data.lastName} onChange={e=>update('lastName',e.target.value)} /></Field><Field label="Email"><input required type="email" className={input} value={data.email} onChange={e=>update('email',e.target.value)} /></Field><Field label="Phone"><input required type="tel" className={input} value={data.phone} onChange={e=>update('phone',e.target.value)} /></Field><Field label="Property Address" help="Civic address, rural address, or legal land description if known."><input className={input} value={data.address} onChange={e=>update('address',e.target.value)} /></Field><Field label="Septic Requirement"><select className={input} value={data.requirements} onChange={e=>update('requirements',e.target.value)}><option value="">Select one</option><option>New septic installation</option><option>Septic replacement</option><option>Septic repair</option><option>Inspection / compliance review</option><option>Site assessment / soil testing</option><option>Not sure yet</option></select></Field></div>}{step===1 && <div className="grid gap-5 md:grid-cols-2"><Field label="House Size"><input className={input} value={data.houseSize} onChange={e=>update('houseSize',e.target.value)} placeholder="Approx. square footage" /></Field><Field label="Bedrooms"><select className={input} value={data.bedrooms} onChange={e=>update('bedrooms',e.target.value)}><option value="">Select</option>{['1','2','3','4','5','6+'].map(x=><option key={x}>{x}</option>)}</select></Field><Field label="Bathrooms"><select className={input} value={data.bathrooms} onChange={e=>update('bathrooms',e.target.value)}><option value="">Select</option>{['1','2','3','4','5+'].map(x=><option key={x}>{x}</option>)}</select></Field><Field label="Occupants"><input className={input} value={data.occupants} onChange={e=>update('occupants',e.target.value)} placeholder="Current or planned number of occupants" /></Field><Field label="Occupant Notes" help="Seasonal use, guests, rental use, suites, or planned growth."><textarea className={input} value={data.occupantNotes} onChange={e=>update('occupantNotes',e.target.value)} /></Field></div>}{step===2 && <div className="grid gap-5"><Field label="Products / Water Treatment"><div className="grid gap-3 sm:grid-cols-2">{['Garburator','Reverse Osmosis','Iron Filter','Water Softener'].map(x=><label key={x} className="rounded-xl border border-[#E0DBD7] p-4"><input type="checkbox" className="mr-2" checked={data.products.includes(x)} onChange={e=>update('products', e.target.checked ? [data.products,x].filter(Boolean).join(',') : data.products.split(',').filter(v=>v!==x).join(','))} />{x}</label>)}</div></Field><Field label="Additional high water use fixtures?"><div className="grid gap-3 sm:grid-cols-2">{['Tub/s','Steam Shower / Multi Head Shower','Large laundry use','Hot tub / spa','Other high-use fixture','None'].map(x=><label key={x} className="rounded-xl border border-[#E0DBD7] p-4"><input type="checkbox" className="mr-2" checked={data.waterFixtures.includes(x)} onChange={e=>update('waterFixtures', e.target.checked ? [data.waterFixtures,x].filter(Boolean).join(',') : data.waterFixtures.split(',').filter(v=>v!==x).join(','))} />{x}</label>)}</div></Field><Field label="Water Source"><select className={input} value={data.waterSource} onChange={e=>update('waterSource',e.target.value)}><option value="">Select Water Source</option><option>Drilled well</option><option>Dug well</option><option>Cistern</option><option>Municipal / treated supply</option><option>Other / not sure</option></select></Field></div>}{step===3 && <div className="grid gap-5 md:grid-cols-2"><Field label="Location of neighbouring wells" help="Approximate distance and direction if known."><textarea className={input} value={data.neighbouringWells} onChange={e=>update('neighbouringWells',e.target.value)} /></Field><Field label="Any covenants or easements?"><select className={input} value={data.covenants} onChange={e=>update('covenants',e.target.value)}><option value="">Select</option><option>Yes</option><option>No</option><option>Not sure</option></select></Field><Field label="Are there other buildings on site?"><select className={input} value={data.otherBuildings} onChange={e=>update('otherBuildings',e.target.value)}><option value="">Select</option><option>Yes</option><option>No</option><option>Planned future buildings</option></select></Field><Field label="Do you have/will have a home based business?"><select className={input} value={data.homeBusiness} onChange={e=>update('homeBusiness',e.target.value)}><option value="">Select</option><option>Yes</option><option>No</option><option>Possibly in future</option></select></Field></div>}{step===4 && <div className="grid gap-5"><Field label="Hobbies" help="Examples: gardening, livestock, workshop, home salon, food prep, equipment washing."><textarea className={input} value={data.hobbies} onChange={e=>update('hobbies',e.target.value)} /></Field><Field label="Lifestyle" help="Anything that may affect water use or septic loading."><textarea className={input} value={data.lifestyle} onChange={e=>update('lifestyle',e.target.value)} /></Field><Field label="Comments or Questions?"><textarea className={`${input} min-h-32`} value={data.comments} onChange={e=>update('comments',e.target.value)} /></Field></div>}{step===5 && <div><h2 className="text-3xl font-black text-[#40190E]">Review before submitting</h2><p className="mt-3 text-[#40190E]/75">Use Back or click any step above to edit. When submitted, this is prepared for email delivery now and ready for CRM/Sheet webhook connection.</p><dl className="mt-6 grid gap-3">{Object.entries(data).map(([k,v])=><div key={k} className="rounded-xl bg-[#E0DBD7] p-4"><dt className="font-black text-[#40190E]">{k}</dt><dd className="text-[#40190E]/80">{v || '—'}</dd></div>)}</dl></div>}<div className="mt-4 flex justify-between gap-3"><button type="button" onClick={back} disabled={step===0} className="rounded-full border-2 border-[#B5553A] px-6 py-3 font-black text-[#B5553A] disabled:opacity-40">Back</button><button className="rounded-full bg-[#D5560B] px-6 py-3 font-black text-white">{step<intakeSteps.length-1?'Continue':'Verify & Submit'}</button></div></form></div>}</div></section></main><Footer /><ElevenLabsChatBubble /></> }
+
+function ElevenLabsChatBubble() { useEffect(() => { const scriptId='elevenlabs-convai-script'; if (!document.getElementById(scriptId)) { const script=document.createElement('script'); script.id=scriptId; script.src='https://unpkg.com/@elevenlabs/convai-widget-embed'; script.async=true; script.type='text/javascript'; document.body.appendChild(script); } const elId='elevenlabs-convai-widget'; if (!document.getElementById(elId)) { const widget=document.createElement('elevenlabs-convai'); widget.id=elId; widget.setAttribute('agent-id', import.meta.env.VITE_ELEVENLABS_AGENT_ID || 'agent_0501ksmvcy92fbzsycardzmwf9je'); widget.setAttribute('variant','compact'); widget.setAttribute('override-language','en'); widget.setAttribute('data-chat-only','true'); widget.setAttribute('style','position:fixed;right:24px;bottom:24px;z-index:60;'); document.body.appendChild(widget); } return () => {}; }, []); return null }
+
+function SeoJsonLd() { const data = useMemo(() => ({ '@context':'https://schema.org', '@type':'LocalBusiness', name:"Ozzy's Excavation", url:'https://ozzysexcavation.ca', email:'admin@ozzysexcavation.ca', telephone:'+1-778-209-1414', areaServed:[...primaryCities,...towns,...counties,'Alberta'], description:'Professional septic, earthwork, excavation, dewatering, land clearing, screw pile, demolition, seasonal, and landscape services across Alberta.' }), []); return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} /> }
+
+function HomePage() { return <><SeoJsonLd /><Navbar /><main><Hero /><About /><Services /><Quote /><ServiceAreas /></main><Footer /><ElevenLabsChatBubble /></> }
+
+export default function App() { if (window.location.pathname === '/septic-assessment-form') return <SepticAssessmentPage />; const service = services.find((item) => window.location.pathname === `/services/${item.slug}`); return service ? <ServicePage service={service} /> : <HomePage /> }

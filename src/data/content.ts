@@ -121,7 +121,7 @@ export const site: SiteMeta = {
   email: "admin@ozzysexcavation.ca",
   phone: "Call for a quote",
   location: "Alberta, Canada",
-  legalName: "Ozzy's Energy Services Ltd."
+  legalName: "Ozzy's Excavation Services"
 }
 
 export const navLinks: NavLink[] = [
@@ -182,7 +182,7 @@ export const aboutContent = {
   highlightPhrase: "Heavy Equipment",
   image: "/ozzy.jpg",
   imageAlt: "Ozzy — Owner of Ozzy's Excavation & Earthworks",
-  bio: ["I grew up obsessed with machines, and that childhood passion shaped a career across major heavy-civil and inner-city construction projects. After nearly a decade in the industry, I built Ozzy's Excavation & Earthworks to turn acreages, backyards, and rural properties into functional, beautiful spaces.","At Ozzy's Energy Services Ltd., we provide end-to-end private septic system solutions for acreages, rural homes, and new builds across Alberta. As AOWMA-certified professionals, we are qualified to assess, design, install, repair, and upgrade septic systems of any size or complexity.","Whether you're building a new home, replacing a failed system, expanding your property, or correcting drainage issues — we take care of everything from initial soil evaluation and permitting to final inspection and commissioning."],
+  bio: ["I grew up obsessed with machines, and that childhood passion shaped a career across major heavy-civil and inner-city construction projects. After nearly a decade in the industry, I built Ozzy's Excavation & Earthworks to turn acreages, backyards, and rural properties into functional, beautiful spaces.","At Ozzy's Excavation Services, we provide end-to-end private septic system solutions for acreages, rural homes, and new builds across Alberta. As AOWMA-certified professionals, we are qualified to assess, design, install, repair, and upgrade septic systems of any size or complexity.","Whether you're building a new home, replacing a failed system, expanding your property, or correcting drainage issues — we take care of everything from initial soil evaluation and permitting to final inspection and commissioning."],
   stats: [
     {
       value: "10+",
@@ -992,7 +992,7 @@ export const footerContent = {
     "Privacy Policy": "#",
     "Terms of Service": "#"
   },
-  copyright: "Ozzy's Energy Services Ltd."
+  copyright: "Ozzy's Excavation Services"
 } as const
 
 export const pageContent_ = {

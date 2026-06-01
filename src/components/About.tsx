@@ -38,7 +38,7 @@ export default function About() {
                 & Earthworks to turn acreages, backyards, and rural properties into functional, beautiful spaces.
               </p>
               <p>
-                At Ozzy's Energy Services Ltd., we provide end-to-end private septic system solutions for acreages,
+                At Ozzy's Excavation Services, we provide end-to-end private septic system solutions for acreages,
                 rural homes, and new builds across Alberta. As AOWMA-certified professionals, we are qualified to
                 assess, design, install, repair, and upgrade septic systems of any size or complexity.
               </p>
