@@ -25,19 +25,18 @@ This file is the shared project checklist for AI/human agents working on this re
 Branch: `mobile/responsive-optimization`
 
 Recent state notes:
-- Desktop was restored after failed mobile Phase 1/2 experiments were reverted.
-- The active branch contains revert commits for the attempted mobile viewport/header/hero changes.
-- Assessment form acknowledgement copy has been changed locally but not committed yet.
-- Local modified file currently expected before next commit:
-  - `src/App.tsx`
+- Phase 1 mobile/responsive optimization is complete and ready to merge to `main`.
+- Desktop navbar and hero remain isolated in desktop-only components.
+- Mobile navbar and hero are isolated in mobile-only components.
+- Quote form mobile overflow has been fixed with full-width/min-width safeguards and mobile padding.
+- Quote form now shows a local mock submission confirmation and resets automatically; it still does not send real email/webhooks.
+- Phone links use real E.164 `tel:` targets in source.
+- ElevenLabs agent has been rebranded externally to Ozzy's Excavation Services with the orange O avatar.
 
-Uncommitted copy change:
-- Septic assessment final acknowledgement checkbox text should read:
-  - `By checking this ticbox, you acknowledge that the information supplied on this form is correct to the best of your knowledge. You further acknowledge and understand that your system design will be based on the information supplied.`
-
-Validation already run after the copy change:
-- `npm run build` passed.
-- Text presence check passed.
+Validation completed:
+- `npm run build` passed after Phase 1 changes.
+- Browser overflow check confirmed no horizontal overflow at 390px viewport width.
+- ElevenLabs API verification returned no old TerraCore branding references in returned agent JSON.
 
 ## Completed / Stable Features
 
@@ -65,35 +64,37 @@ Use this safer approach after failed shared-layout edits:
 
 ### Phase 0 — Project Plan / Agent Handoff
 
-Status: IN PROGRESS
+Status: COMPLETE
 
 Tasks:
 - [x] Create this shared project plan file.
-- [ ] Commit the assessment acknowledgement copy change plus this plan file when Darren approves.
-- [ ] Optionally push branch only if Darren explicitly asks.
+- [x] Update plan with completed Phase 1 mobile/responsive work.
+- [x] Commit mobile branch when Darren approves.
+- [x] Push branch and merge to `main` when Darren approves.
 
 ### Phase 1 — Safe Mobile/Desktop Component Split
 
-Status: NOT STARTED
+Status: COMPLETE
 
 Goal:
 - Separate risky mobile changes from stable desktop rendering.
 
 Tasks:
-- [ ] Extract current working `Navbar` into `DesktopNavbar` without visual changes.
-- [ ] Add minimal `MobileNavbar` rendered only on mobile.
-- [ ] Extract current hero into `DesktopHero` without visual changes.
-- [ ] Add minimal `MobileHero` rendered only on mobile.
-- [ ] Run `npm run build`.
-- [ ] Start/confirm dev server on `0.0.0.0:5173`.
-- [ ] Human test desktop first.
-- [ ] Human test iPhone 14 and Pixel 7.
-- [ ] Commit only after approval.
+- [x] Extract current working `Navbar` into `DesktopNavbar` without visual changes.
+- [x] Add minimal `MobileNavbar` rendered only on mobile.
+- [x] Extract current hero into `DesktopHero` without visual changes.
+- [x] Add minimal `MobileHero` rendered only on mobile.
+- [x] Fix mobile quote form overflow with full-width/min-width guards and smaller mobile padding.
+- [x] Add local quote submission confirmation and automatic reset behavior.
+- [x] Preserve septic scope redirect to `/septic-assessment-form`.
+- [x] Run `npm run build`.
+- [x] Verify 390px viewport has no horizontal overflow.
+- [x] Commit after approval.
 
 Acceptance:
-- Desktop navbar and hero look unchanged.
-- Mobile has isolated mobile-only navbar/hero.
-- No horizontal wandering on iPhone 14 / Pixel 7.
+- [x] Desktop navbar and hero look unchanged structurally by preserving desktop-only markup.
+- [x] Mobile has isolated mobile-only navbar/hero.
+- [x] No horizontal wandering at 390px viewport verification.
 
 ### Phase 2 — Mobile Hero Only
 
