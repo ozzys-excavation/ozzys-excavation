@@ -42,7 +42,14 @@ function targetDoctype(type: IntakeType): string {
 }
 
 function submittedAt(form: Record<string, unknown>, fallback: string): string {
-  return sanitizeString(form.submittedAt || form.submitted_at) || fallback
+  const value = sanitizeString(form.submittedAt || form.submitted_at) || fallback
+  try {
+    const date = new Date(value)
+    if (!Number.isNaN(date.getTime())) {
+      return date.toISOString().replace('T', ' ').replace(/\.\d+Z$/, '')
+    }
+  } catch {}
+  return value
 }
 
 function erpPayload(type: IntakeType, record: {
