@@ -37,6 +37,18 @@ function safeJsonStringify(value: unknown): string {
   }
 }
 
+function toMysqlDatetime(value: unknown): string {
+  const text = sanitizeString(value)
+  if (!text) return new Date().toISOString().replace('T', ' ').replace(/\.\d+Z$/, '')
+  try {
+    const date = new Date(text)
+    if (!Number.isNaN(date.getTime())) {
+      return date.toISOString().replace('T', ' ').replace(/\.\d+Z$/, '')
+    }
+  } catch {}
+  return text
+}
+
 function targetDoctype(type: IntakeType): string {
   return type === 'septic-assessment' ? 'Septic Site Assessment Request' : 'Website Quote Request'
 }
@@ -69,7 +81,7 @@ function erpPayload(type: IntakeType, record: {
     status: 'Received',
     source_url: record.source.url,
     submitted_at: submittedAt(form, record.receivedAt),
-    received_at: record.receivedAt,
+    received_at: toMysqlDatetime(record.receivedAt),
     ip_address: record.source.ip,
     user_agent: record.source.userAgent,
     first_name: firstName,
