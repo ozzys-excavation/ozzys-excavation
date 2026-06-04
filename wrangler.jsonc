@@ -3,13 +3,13 @@
   "name": "ozzys-excavation",
   "pages_build_output_dir": "dist",
   "vars": {
-    "ERPNEXT_BASE_URL": "https://ozzy.dtreeind.com"
+    "ERPNEXT_BASE_URL": "https://erp.ozzysexcavation.ca"
   },
   "d1_databases": [
     {
       "binding": "OZZY_INTAKE_DB",
       "database_name": "ozzy_intake",
-      "database_id": "067c3035-b411-4fcc-8b4c-5097e058c1d9"
+      "database_id": "a9b15650-88d0-43c9-9819-1ae437cbeb04"
     }
   ]
 }
