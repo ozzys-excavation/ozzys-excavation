@@ -8,8 +8,18 @@ interface Message {
   streaming?: boolean
 }
 
-const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID || 'agent_0501ksmvcy92fbzsycardzmwf9je'
+const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID || 'agent_1101ktf9z9defh1asb320qsqnzd5'
 const TOKEN_URL = `/api/elevenlabs/v1/convai/conversation/token?agent_id=${AGENT_ID}`
+
+const SERVER_GREETING_PREFIXES = [
+  "Hi, this is the Ozzy's Excavation Services agent",
+  "Hey there! I'm Ozzy",
+]
+
+function isServerGreeting(text: string) {
+  const normalized = text.trim()
+  return SERVER_GREETING_PREFIXES.some(prefix => normalized.startsWith(prefix))
+}
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
@@ -131,6 +141,13 @@ export default function ChatWidget() {
               streamingTextRef.current += part.text || ''
               const sid = streamingIdRef.current
               const accText = streamingTextRef.current
+              if (isServerGreeting(accText)) {
+                setMessages(prev => prev.filter(m => m.id !== sid))
+                streamingIdRef.current = null
+                streamingTextRef.current = ''
+                firstConnectRef.current = false
+                return
+              }
               setMessages(prev => prev.map(m =>
                 m.id === sid ? { ...m, text: accText } : m
               ))
@@ -149,12 +166,13 @@ export default function ChatWidget() {
             const trimmed = text.trim()
 
             if (trimmed) {
-              // On first connection, skip the auto-greeting duplicate
-              if (firstConnectRef.current) {
+              // Suppress ElevenLabs first_message greetings. The custom widget already shows its own greeting,
+              // and reconnects/navigation can otherwise repeat the opening message mid-conversation.
+              if (isServerGreeting(trimmed)) {
                 firstConnectRef.current = false
-                responseHandledRef.current = true
                 return
               }
+              if (firstConnectRef.current) firstConnectRef.current = false
               responseHandledRef.current = true
               setThinking(false)
               setMessages(prev => [...prev, {
@@ -188,11 +206,12 @@ export default function ChatWidget() {
               else result = `Unknown client tool: ${toolName || 'missing name'}.`
             }
 
-            ws.send(JSON.stringify({
-              type: 'client_tool_result',
-              tool_call_id: callId,
-              result,
-            }))
+            // Navigation tools are configured as non-blocking in ElevenLabs, so do not send a
+            // tool result back here. Sending an unexpected result can leave the conversation stuck.
+            // Keep the chat open and ready for the user's next message while the page moves behind it.
+            void callId
+            void result
+            setThinking(false)
             return
           }
 
