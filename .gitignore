@@ -30,3 +30,4 @@ dist-ssr
 # Local source asset dumps (not deployed)
 Ozzys Excavtion Assets/
 src/assets/
+tmp/
