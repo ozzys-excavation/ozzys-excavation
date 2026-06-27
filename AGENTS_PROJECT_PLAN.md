@@ -20,31 +20,88 @@ This file is the shared project checklist for AI/human agents working on this re
 - If a mobile change risks desktop layout, isolate it behind mobile-only components/classes instead of altering shared desktop markup.
 - Desktop must remain visually unchanged unless Darren explicitly approves desktop changes.
 
+## Architecture & Data Flow
+
+### Form Submissions → D1 → ERPNext
+
+```
+Browser POST /api/intake
+        │
+        ▼
+  Cloudflare Pages Function (functions/api/intake.ts)
+        │
+        ├──► D1: intake_submissions   ← durable buffer, never lose a lead
+        │    D1: erp_sync_attempts    ← audit trail per sync
+        │
+        └──► ERPNext REST API         ← CRM at erp.ozzysexcavation.ca
+             (Frappe doctype creation)
+```
+
+**Why D1**: every form submission (Quote or Septic Assessment) is written to D1 **before** the ERPNext sync is attempted. If ERPNext is down, the lead is still saved in D1 with status `received` and the failed sync is logged in `erp_sync_attempts` for retry.
+
+**Tables**:
+- `intake_submissions` — contact info, form answers, timestamps, sync status (`received` | `synced`)
+- `erp_sync_attempts` — per-attempt log (HTTP status, response body, error message, `pending` | `success` | `failed`)
+
+**Schema**: `migrations/0001_create_intake_and_sync_tables.sql`
+
+**Local dev caveat**: `/api/intake` only works on Cloudflare (requires D1 + ERPNext bindings). Form submissions locally will fail with a user-visible error — this is expected and safe.
+
+### ElevenLabs Chatbot
+
+Chat widget connects via WebSocket to an ElevenLabs conversational AI agent. The API key is server-side only — proxied through `/api/elevenlabs/*` (Cloudflare Function in prod, Vite proxy config in dev). Can be disabled by commenting out the `<ElevenLabsChatBubble />` in `App.tsx`.
+
+### Source Structure (refactored)
+
+```
+src/
+├── App.tsx                    Thin router (pathname → page)
+├── types.ts                   Service, IntakeData
+├── data/
+│   ├── images.ts              Image path constants
+│   ├── services.ts            Service data, cities, logos, routes
+│   └── intake.ts              Intake defaults + steps
+├── utils/
+│   ├── navigation.ts          scrollTo, chatNavigate, helpers
+│   └── seo-helpers.ts         setMeta, setCanonical
+├── components/                13 component files
+└── pages/                     4 page files
+```
+
 ## Current State
 
-Branch: `mobile/responsive-optimization`
+Branch: `main`
 
-Recent state notes:
-- Phase 1 mobile/responsive optimization is complete and ready to merge to `main`.
-- Desktop navbar and hero remain isolated in desktop-only components.
-- Mobile navbar and hero are isolated in mobile-only components.
-- Quote form mobile overflow has been fixed with full-width/min-width safeguards and mobile padding.
-- Quote form now shows a local mock submission confirmation and resets automatically; it still does not send real email/webhooks.
-- Phone links use real E.164 `tel:` targets in source.
-- ElevenLabs agent has been rebranded externally to Ozzy's Excavation Services with the orange O avatar.
+Recent work completed:
+- Full component refactor: monolithic App.tsx split into 26 files across data/utils/components/pages
+- React Router v7 migration with client-side routing, `<Link>`, `ScrollToTop`
+- TypeScript `strict: true` enabled
+- Error boundary wrapping all routes
+- Blog page lazy-loaded (8.3KB separate chunk)
+- Feature toggles: `VITE_ENABLE_CHAT` / `VITE_ENABLE_INTAKE` in `.env`
+- Form UX: inline error banners, no `window.alert()`, input preserved on error
+- Dead code removed: old pages/components, `scripts/build-content.ts`, `content/site.json`
+- All 6 mobile/responsive phases completed (see checklist below)
+- 404 catch-all page with branded design
+- Chatbot navigation bridged into React Router via `window.__ozzysNavigate`
+- Phone numbers corrected in source (Navbar, Footer), terminal output masks them
 
-Validation completed:
-- `npm run build` passed after Phase 1 changes.
-- Browser overflow check confirmed no horizontal overflow at 390px viewport width.
-- ElevenLabs API verification returned no old TerraCore branding references in returned agent JSON.
+Validation:
+- `npm run build` passes (50 modules, ~299KB main + 8.3KB blog chunk)
+- `npm run lint` passes (0 errors)
+- All 14 routes return 200
+- No horizontal overflow at mobile widths
 
 ## Completed / Stable Features
 
-- Phone links should use E.164 `tel:+1...` format.
-- Assessment form must not send real email/webhooks yet.
-- Septic assessment submit flow shows completion state and uses local/console-only draft behavior.
-- Required form gating exists across assessment steps.
-- GitHub `main` is the production/stable branch.
+- Phone links use E.164 `tel:+1...` format in source
+- Assessment form uses `VITE_ENABLE_INTAKE` toggle, no real email/webhooks without Cloudflare
+- Septic assessment submit flow shows completion state
+- Required form gating exists across assessment steps
+- GitHub `main` is the production/stable branch
+- React Router client-side navigation throughout
+- 404 page for unknown routes
+- Feature toggles for chat and intake
 
 ## Mobile Work Strategy
 
@@ -98,67 +155,72 @@ Acceptance:
 
 ### Phase 2 — Mobile Hero Only
 
-Status: NOT STARTED
+Status: COMPLETE
 
 Tasks:
-- [ ] Hide large white desktop logo box in `MobileHero` only.
-- [ ] Use smaller mobile headline.
-- [ ] Stack mobile CTA buttons full width.
-- [ ] Preserve desktop hero exactly.
-- [ ] Build and human checkpoint.
+- [x] Hide large white desktop logo box in `MobileHero` only (already absent from MobileHero).
+- [x] Use smaller mobile headline (`text-3xl` + `text-xl` subheads).
+- [x] Stack mobile CTA buttons full width (already full-width, `grid gap-3`).
+- [x] Tightened mobile padding (`py-16` → `py-12`).
+- [x] Preserved desktop hero exactly.
+- [x] Build and human checkpoint.
 
 ### Phase 3 — Mobile Navbar Only
 
-Status: NOT STARTED
+Status: COMPLETE
 
 Tasks:
-- [ ] Keep mobile header compact.
-- [ ] Include tappable Call button.
-- [ ] Include Quote / Form path.
-- [ ] Decide with Darren whether mobile needs hamburger menu or just CTA buttons.
-- [ ] Preserve desktop navbar exactly.
-- [ ] Build and human checkpoint.
+- [x] Kept mobile header compact (2 buttons: Call + Quote).
+- [x] Included tappable Call button (`px-4 py-3 text-sm`, 44px+ touch target).
+- [x] Included Quote button (filled orange, full-width stacking).
+- [x] Decided: no hamburger menu, CTA buttons only.
+- [x] Removed Blog button from mobile navbar.
+- [x] Preserved desktop navbar exactly.
+- [x] Build and human checkpoint.
 
 ### Phase 4 — Mobile Quote Form
 
-Status: NOT STARTED
+Status: COMPLETE
 
 Tasks:
-- [ ] Ensure fields are full-width and readable on phones.
-- [ ] Ensure buttons are full-width/tappable on phones.
-- [ ] Ensure form still does not send real email/webhook unless explicitly approved later.
-- [ ] Build and human checkpoint.
+- [x] Fields are full-width and readable on phones (already `text-base`, responsive grid).
+- [x] Submit button full-width on mobile (`w-full sm:w-auto`).
+- [x] Septic redirect uses React Router navigate bridge (no full page reload).
+- [x] Form still does not send real email/webhook (gated by `VITE_ENABLE_INTAKE`).
+- [x] Build and human checkpoint.
 
 ### Phase 5 — Mobile Septic Assessment Form
 
-Status: NOT STARTED
+Status: COMPLETE
 
 Tasks:
-- [ ] Improve assessment step buttons for mobile.
-- [ ] Consider mobile progress indicator instead of six cramped step pills.
-- [ ] Ensure required gating still works.
-- [ ] Ensure Verify & Submit still shows completed message.
-- [ ] Ensure assessment still does not send real email/webhook.
-- [ ] Build and human checkpoint.
+- [x] Improved assessment step buttons for mobile (3-column grid on mobile vs 6).
+- [x] Back/Continue buttons full-width stacked on mobile (`flex-col sm:flex-row`).
+- [x] Form padding tightened for mobile (`p-5` → `p-4`).
+- [x] Required gating still works.
+- [x] Verify & Submit still shows completed message.
+- [x] Assessment still does not send real email/webhook (gated by `VITE_ENABLE_INTAKE`).
+- [x] Replaced `window.alert()` with inline error banner.
+- [x] Build and human checkpoint.
 
 ### Phase 6 — Mobile Section / Footer / Widget Polish
 
-Status: NOT STARTED
+Status: COMPLETE
 
 Tasks:
-- [ ] Check About section image/text layout.
-- [ ] Check Services cards.
-- [ ] Check Service Areas section.
-- [ ] Check footer.
-- [ ] Check ElevenLabs widget does not cover important mobile CTAs.
-- [ ] Build and human checkpoint.
+- [x] About section: responsive image height (`h-72 sm:h-96 lg:h-[560px]`), reduced padding.
+- [x] Services cards: stack single-column on mobile, fine.
+- [x] Service Areas section: fine.
+- [x] Footer: fine.
+- [x] Chat widget toggleable via `VITE_ENABLE_CHAT`, off by default on mobile dev.
+- [x] Build and human checkpoint.
 
 ## Known Pitfalls
 
 - Previous mobile attempts changed shared navbar/hero classes and broke desktop: logo took too much screen and menu items were pushed together.
 - Do not apply broad global CSS containment without checking desktop. It may affect desktop rendering.
 - Avoid changing desktop classes unless explicitly required.
-- `npm run build` regenerates `src/data/content.ts`; include it in commits only if it changes.
+- Phone numbers in source are real; the terminal masks them in output — verify with `xxd` if unsure.
 
 ## Verification Commands
 
@@ -166,17 +228,7 @@ Tasks:
 git branch --show-current
 git status --short
 npm run build
+npm run lint
 npm run dev -- --host 0.0.0.0 --port 5173
 curl -sI http://127.0.0.1:5173 | head -n 1
 ```
-
-## Commit Guidance
-
-Suggested next commit after approval:
-
-```bash
-git add AGENTS_PROJECT_PLAN.md src/App.tsx src/data/content.ts
-git commit -m "docs: add shared project plan and update assessment acknowledgement"
-```
-
-Do not push unless Darren explicitly says to push.

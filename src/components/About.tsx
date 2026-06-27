@@ -1,74 +1,56 @@
+import { aboutOperator } from "../data/images";
 export default function About() {
   return (
-    <section id="about" className="py-24 sm:py-32 bg-earth">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Image */}
-          <div className="relative">
-            <div className="aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
-              <img
-                src="/ozzy.jpg"
-                alt="Ozzy — Owner of Ozzy's Excavation & Earthworks"
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </div>
-            {/* Floating stat card */}
-            <div className="absolute -bottom-8 -left-8 bg-white rounded-2xl p-6 shadow-xl hidden lg:block">
-              <div className="text-rust text-4xl font-display font-bold">10+</div>
-              <div className="text-earth/60 text-sm mt-1">Years in the<br />Industry</div>
-            </div>
-            <div className="absolute -top-8 -right-8 bg-rust rounded-2xl p-6 shadow-xl hidden lg:block">
-              <div className="text-white text-4xl font-display font-bold">500+</div>
-              <div className="text-white/70 text-sm mt-1">Projects<br />Completed</div>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="text-white">
-            <span className="text-rust-light font-semibold text-sm tracking-widest uppercase">About Oz</span>
-            <h2 className="mt-3 text-4xl sm:text-5xl font-display font-bold text-white leading-tight">
-              A Lifetime of Passion for <span className="text-rust-light">Heavy Equipment</span>
-            </h2>
-
-            <div className="mt-8 space-y-5 text-white/90 leading-relaxed text-lg">
-              <p>
-                I grew up obsessed with machines, and that childhood passion shaped a career across major heavy-civil
-                and inner-city construction projects. After nearly a decade in the industry, I built Ozzy's Excavation
-                & Earthworks to turn acreages, backyards, and rural properties into functional, beautiful spaces.
-              </p>
-              <p>
-                At Ozzy's Excavation Services, we provide end-to-end private septic system solutions for acreages,
-                rural homes, and new builds across Alberta. As AOWMA-certified professionals, we are qualified to
-                assess, design, install, repair, and upgrade septic systems of any size or complexity.
-              </p>
-              <p>
-                Whether you're building a new home, replacing a failed system, expanding your property, or correcting
-                drainage issues — we take care of everything from initial soil evaluation and permitting to final
-                inspection and commissioning.
-              </p>
-            </div>
-
-            {/* Stats */}
-            <div className="mt-10 grid grid-cols-3 gap-8">
-              {[
-                { value: '10+', label: 'Years Experience' },
-                { value: '500+', label: 'Projects Done' },
-                { value: '100%', label: 'Client Satisfaction' },
-              ].map((stat) => (
-                <div key={stat.label}>
-                  <div className="text-3xl sm:text-4xl font-display font-bold text-rust-light">{stat.value}</div>
-                  <div className="text-white/75 text-sm mt-1">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-10">
-              <span className="text-white/60 italic text-lg">— Your land. Your vision. Our expertise.</span>
-            </div>
+    <section id="about" className="bg-white px-5 py-16 lg:py-24">
+      <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
+        <img
+          src={aboutOperator}
+          alt="Ty Osborne, President and Founder of Ozzy's Excavation"
+          className="h-72 w-full rounded-[2rem] object-cover object-top shadow-2xl sm:h-96 lg:h-[560px]"
+          loading="lazy"
+        />
+        <div>
+          <p className="font-black uppercase tracking-[0.2em] text-[#B5553A]">
+            About Ozzy's Excavation Services
+          </p>
+          <h2 className="mt-4 text-4xl font-black text-[#40190E] md:text-5xl">
+            Your land. Your vision.
+            <br />
+            Our expertise.
+          </h2>
+          <p className="mt-6 text-lg leading-8 text-[#40190E]">
+            At Ozzy's Excavation Services, we provide end-to-end private septic
+            system solutions for acreages, rural homes, and new builds across
+            Alberta. As AOWMA-certified professionals, we are qualified to
+            assess, design, install, repair, and upgrade septic systems that
+            meet provincial standards and perform reliably for years to come.
+          </p>
+          <p className="mt-5 text-lg leading-8 text-[#40190E]">
+            Ty Osborne grew up obsessed with machines, and that passion shaped a
+            career across major heavy-civil and inner-city construction
+            projects. After nearly a decade in the industry, Ozzy’s Excavation &
+            Earthworks was built to turn acreages, backyards, and client visions
+            into reality while delivering honest, high-quality work every time.
+          </p>
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+            {[
+              "Certified & AOWMA-Approved",
+              "Fully Insured & Code-Compliant",
+              "Modern Equipment, Skilled Operators",
+              "Transparent Pricing, No Hidden Fees",
+              "Reliable workmanship built for Alberta conditions",
+              "Regulatory compliance and reliability guarantee",
+            ].map((x) => (
+              <div
+                key={x}
+                className="rounded-2xl bg-[#E0DBD7] px-4 py-3 font-bold text-[#40190E]"
+              >
+                ✓ {x}
+              </div>
+            ))}
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }

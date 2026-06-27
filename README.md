@@ -1,73 +1,59 @@
-# React + TypeScript + Vite
+# Ozzy's Excavation Services
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Marketing website for Ozzy's Excavation — a septic, earthworks, and excavation company serving Alberta.
 
-Currently, two official plugins are available:
+**Live**: [ozzysexcavation.ca](https://ozzysexcavation.ca)  
+**Stack**: React 19 + TypeScript + Vite + Tailwind CSS 4  
+**Hosting**: Cloudflare Pages  
+**CRM**: ERPNext (Frappe) at `erp.ozzysexcavation.ca`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Architecture
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+Browser                    Cloudflare Pages                External
+───────                    ────────────────                ────────
+Form submit ──POST──►  /api/intake (Function)
+                              │
+                              ├──► D1 (intake_submissions)   ← durable buffer
+                              │    (erp_sync_attempts)        ← audit trail
+                              │
+                              └──► ERPNext API                ← CRM lead creation
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### D1 — Submission Buffer
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Every form submission (Quote Request or Septic Assessment) is written to Cloudflare D1 **first**, then forwarded to ERPNext. This ensures no lead is ever lost — if ERPNext is unreachable, the submission stays in D1 with status `received` and the sync failure is logged.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**Tables**:
+- `intake_submissions` — lead data (contact info, form answers, timestamps, sync status)
+- `erp_sync_attempts` — per-attempt audit log (status, HTTP response, error messages)
+
+Schema: `migrations/0001_create_intake_and_sync_tables.sql`
+
+### Chatbot
+
+The floating chat widget connects to an ElevenLabs conversational AI agent branded as Ozzy. The API key is server-side only — proxied through `/api/elevenlabs/*` (Cloudflare Function in prod, Vite proxy in dev). Toggle with `VITE_ENABLE_CHAT=true` in `.env`.
+
+### Feature Toggles
+
+| Variable | Default | Controls |
+|----------|---------|----------|
+| `VITE_ENABLE_CHAT` | `false` | ElevenLabs chat widget |
+| `VITE_ENABLE_INTAKE` | `false` | Form submissions to D1/ERPNext |
+
+When `VITE_ENABLE_INTAKE=false`, forms show success locally without sending data — safe for development.
+
+## Local Development
+
+```bash
+cp .env.example .env    # configure API keys + toggles
+npm install
+npm run dev -- --host
+```
+
+Opens at `http://localhost:5173`. The dev server proxies `/api/elevenlabs/*` to ElevenLabs. Form submissions skip `/api/intake` unless `VITE_ENABLE_INTAKE=true`.
+
+```bash
+npm run build    # tsc -b && vite build
+npm run lint     # eslint
 ```

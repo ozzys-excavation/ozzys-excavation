@@ -1,45 +1,39 @@
-import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
-import Hero from '../components/Hero'
-import Services from '../components/Services'
-import WhyChooseUs from '../components/WhyChooseUs'
-import About from '../components/About'
-import CTA from '../components/CTA'
-import Footer from '../components/Footer'
-import FadeInSection from '../components/FadeInSection'
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Hero from "../components/Hero";
+import About from "../components/About";
+import Services from "../components/Services";
+import Quote from "../components/Quote";
+import ServiceAreas from "../components/ServiceAreas";
+import Footer from "../components/Footer";
+import SeoJsonLd from "../components/SeoJsonLd";
+import { scrollTo } from "../utils/navigation";
 
 export default function HomePage() {
-  const { hash } = useLocation()
+  const { hash } = useLocation();
 
   useEffect(() => {
-    if (!hash) return
-    // Wait for React to commit DOM, then scroll to the anchor
-    const id = hash.replace('#', '')
-    const el = document.getElementById(id)
-    if (el) {
-      // Small delay to let layout settle (especially after route change)
-      requestAnimationFrame(() => {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      })
+    const id = hash.replace("#", "");
+    if (id) {
+      window.requestAnimationFrame(() => scrollTo(id));
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [hash])
+  }, [hash]);
 
   return (
     <>
-      <Hero />
-      <FadeInSection>
-        <WhyChooseUs />
-      </FadeInSection>
-      <FadeInSection delay={100}>
-        <Services />
-      </FadeInSection>
-      <FadeInSection delay={150}>
+      <SeoJsonLd />
+      <Navbar />
+      <main>
+        <Hero />
         <About />
-      </FadeInSection>
-      <FadeInSection delay={200}>
-        <CTA />
-      </FadeInSection>
+        <Services />
+        <Quote />
+        <ServiceAreas />
+      </main>
       <Footer />
     </>
-  )
+  );
 }

@@ -1,120 +1,107 @@
-import { Link } from 'react-router-dom'
-import { footerContent, serviceDetails, site, navLogoLetter } from '../data/content'
-
-// Build slug lookup from service detail pages
-const slugMap: Record<string, string> = {}
-serviceDetails.forEach((s) => {
-  slugMap[s.title] = s.slug
-})
-
-// Map service names with no dedicated page to their parent
-const serviceRedirects: Record<string, string> = {
-  'Demolition': 'additional-services',
-  'Snow Removal': 'additional-services',
-}
-
-function serviceHref(name: string): string {
-  const slug = slugMap[name] || serviceRedirects[name]
-  return slug ? `/services/${slug}` : '/#services'
-}
-
-// Map footer page link names to route slugs
-const pageSlugMap: Record<string, string> = {
-  'About Oz': 'about',
-  'Our Equipment': 'equipment',
-  'Service Areas': 'service-areas',
-  'Careers': 'careers',
-  'Septic System Guide': 'septic-guide',
-  'Alberta Regulations': 'alberta-regulations',
-  'FAQ': 'faq',
-  'Blog': 'blog',
-}
-
-function pageHref(name: string): string {
-  return pageSlugMap[name] ? `/${pageSlugMap[name]}` : '#'
-}
-
+import { Link } from "react-router-dom";
+import { services, associationLogos } from "../data/services";
 export default function Footer() {
   return (
-    <footer className="bg-earth text-white">
-      {/* Main footer */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-12">
-          {/* Brand */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-rust rounded-lg flex items-center justify-center text-white font-display font-bold text-lg">
-                {navLogoLetter}
-              </div>
-              <div>
-                <div className="font-display font-bold text-xl">{site.name}</div>
-                <div className="text-white/50 text-sm">{site.tagline}</div>
-              </div>
-            </div>
-            <p className="text-white/80 leading-relaxed mb-8 max-w-sm">
-              {footerContent.description}
+    <footer className="bg-[#260f08] px-5 py-16 text-white">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-10 lg:grid-cols-4">
+          <div>
+            <h2 className="text-2xl font-black">Ozzy's Excavation</h2>
+            <p className="mt-4 text-white/80">
+              Professional septic, earthwork, excavation, water transfer, land
+              clearing, demolition, screw pile, seasonal, and landscape services
+              across Alberta.
             </p>
-            {/* Certifications */}
-            <div className="flex items-center gap-4">
-              {footerContent.certifications.map((cert) => (
-                <div key={cert} className="bg-white/10 rounded-lg px-4 py-2 text-sm text-white/85">
-                  {cert}
-                </div>
+            <div className="mt-5 space-y-2">
+              <a className="block font-bold" href="tel:+17782091414">
+                778-209-1414
+              </a>
+              <a
+                className="block font-bold"
+                href="mailto:admin@ozzysexcavation.ca"
+              >
+                admin@ozzysexcavation.ca
+              </a>
+            </div>
+          </div>
+          <div>
+            <h3 className="text-lg font-black">Compliance Notes</h3>
+            <p className="mt-4 text-white/80">
+              AOWMA-certified septic support. PSDS-compliant site assessments
+              and soil testing. Fully insured, code-compliant operations with
+              transparent communication from initial assessment to final
+              inspection.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-lg font-black">Service Links</h3>
+            <div className="mt-4 grid gap-2 text-white/80">
+              {services.map((s) => (
+                <Link
+                  key={s.title}
+                  to={`/services/${s.slug}`}
+                  className="text-left hover:text-white"
+                >
+                  {s.title}
+                </Link>
               ))}
             </div>
           </div>
-
-          {/* Link columns */}
-          {footerContent.linkGroups.map((group) => (
-            <div key={group.title}>
-              <h4 className="font-display font-semibold text-sm uppercase tracking-wider text-white/50 mb-6">
-                {group.title}
-              </h4>
-              <ul className="space-y-3">
-                {group.items.map((item) => {
-                  return (
-                    <li key={item}>
-                      <Link
-                        to={group.title === 'Services' ? serviceHref(item) : pageHref(item)}
-                        className="text-white/80 hover:text-rust-light transition-colors text-sm"
-                      >
-                        {item}
-                      </Link>
-                    </li>
-                  )
-                })}
-              </ul>
+          <div>
+            <h3 className="text-lg font-black">Legal</h3>
+            <div className="mt-4 grid gap-2 text-white/80">
+              <Link
+                to="/blog/winter-reclamation-story"
+                className="font-bold hover:text-white"
+              >
+                Blog
+              </Link>
+              <Link
+                to="/terms-of-service"
+                className="font-bold hover:text-white"
+              >
+                Terms of Service
+              </Link>
+              <Link
+                to="/privacy-compliance"
+                className="font-bold hover:text-white"
+              >
+                Privacy Compliance
+              </Link>
             </div>
-          ))}
+            <p className="mt-4 text-white/80">
+              © {new Date().getFullYear()} Ozzy's Excavation Services All rights
+              reserved. Website optimized for Alberta excavation, septic,
+              earthwork, and rural site development inquiries.
+            </p>
+          </div>
         </div>
-      </div>
-
-      {/* Bottom bar */}
-      <div className="border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-white/60 text-sm">
-            &copy; {new Date().getFullYear()} {footerContent.copyright}. All rights reserved.
+        <div className="mt-12 rounded-[2rem] border border-white/15 bg-white/5 p-6">
+          <h3 className="text-xl font-black">
+            Industry Associations & Compliance
+          </h3>
+          <p className="mt-3 max-w-3xl text-white/80">
+            Ozzy’s Excavation operates with recognized industry, safety, and
+            regulatory standards for Alberta septic, excavation, and site
+            development work.
           </p>
-          <div className="flex items-center gap-6">
-            {Object.entries(footerContent.legal).map(([label, href]) => (
-              <a key={label} href={href} className="text-white/50 hover:text-white/80 transition-colors text-sm">
-                {label}
-              </a>
+          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {associationLogos.map((logo) => (
+              <div
+                key={logo.src}
+                className="flex min-h-28 items-center justify-center rounded-2xl bg-white p-4"
+              >
+                <img
+                  src={logo.src}
+                  alt={logo.alt}
+                  className="max-h-20 w-auto object-contain"
+                  loading="lazy"
+                />
+              </div>
             ))}
-            <a
-              href={`https://${site.domain}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/50 hover:text-rust-light transition-colors text-sm flex items-center gap-1"
-            >
-              {site.domain}
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </a>
           </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }

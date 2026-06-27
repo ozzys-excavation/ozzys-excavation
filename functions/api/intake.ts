@@ -43,7 +43,7 @@ function toMysqlDatetime(value: unknown, fallbackText: string): string {
     if (!Number.isNaN(date.getTime())) {
       return date.toISOString().replace('T', ' ').replace(/\.\d+Z$/, '')
     }
-  } catch {}
+  } catch { /* invalid date falls through */ }
   return text.replace('T', ' ').replace(/\.\d+Z$/, '')
 }
 
@@ -58,7 +58,7 @@ function submittedAt(form: Record<string, unknown>, fallback: string): string {
     if (!Number.isNaN(date.getTime())) {
       return date.toISOString().replace('T', ' ').replace(/\.\d+Z$/, '')
     }
-  } catch {}
+  } catch { /* invalid date falls through */ }
   return value
 }
 
@@ -150,7 +150,7 @@ async function syncToErpNext(env: Env, type: IntakeType, record: Parameters<type
   })
 
   const responseText = await response.text()
-  let responseBody: unknown = responseText
+  let responseBody: unknown
   try {
     responseBody = responseText ? JSON.parse(responseText) : null
   } catch {

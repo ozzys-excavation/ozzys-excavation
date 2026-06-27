@@ -1,113 +1,98 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { navLinks, navCtaText, navLogoLetter, site } from '../data/content'
-
-interface NavbarProps {
-  scrolled: boolean
+import { Link } from "react-router-dom";
+import { footerLogo } from "../data/images";
+import { scrollTo } from "../utils/navigation";
+function DesktopNavbar() {
+  return (
+    <header className="sticky top-0 z-40 hidden border-b border-[#E0DBD7] bg-white/95 backdrop-blur md:block">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
+        <button
+          onClick={() => scrollTo("home")}
+          className="flex items-center gap-3 text-left"
+        >
+          <img
+            src={footerLogo}
+            alt="Ozzy's Excavation logo"
+            className="h-12 w-auto"
+          />
+          <span>
+            <span className="block text-xl font-black tracking-tight text-[#40190E]">
+              Ozzy's Excavation Services
+            </span>
+            <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#B5553A]">
+              Septic and Earthworks - Alberta
+            </span>
+          </span>
+        </button>
+        <div className="hidden items-center gap-6 text-sm font-bold text-[#40190E] md:flex">
+          <Link to="/#about">About</Link>
+          <Link to="/#services">Services</Link>
+          <Link to="/blog/winter-reclamation-story">Blog</Link>
+          <Link to="/#coverage">Service Areas</Link>
+          <a href="tel:+17782091414">778-209-1414</a>
+          <Link
+            to="/#quote"
+            className="rounded-full bg-[#D5560B] px-5 py-3 text-white shadow-lg shadow-orange-900/20"
+          >
+            Request a Quote
+          </Link>
+        </div>
+        <Link
+            to="/#quote"
+            className="rounded-full bg-[#D5560B] px-4 py-2 text-sm font-black text-white md:hidden"
+          >
+            Quote
+          </Link>
+      </nav>
+    </header>
+  );
 }
 
-export default function Navbar({ scrolled }: NavbarProps) {
-  const [menuOpen, setMenuOpen] = useState(false)
-
-  const textColor = scrolled ? 'text-earth' : 'text-white'
-  const hoverColor = 'hover:text-rust'
-
-  const handleHomeClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
+function MobileNavbar() {
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-white/95 backdrop-blur-sm shadow-lg py-3'
-          : 'bg-transparent py-5'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link to="#" className="flex items-center gap-3 group" onClick={handleHomeClick}>
-            <div className="w-10 h-10 bg-rust rounded-lg flex items-center justify-center text-white font-display font-bold text-lg transition-transform group-hover:scale-110">
-              {navLogoLetter}
-            </div>
-            <div>
-              <div className={`font-display font-bold text-lg leading-tight transition-colors ${textColor}`}>
-                {site.name}
-              </div>
-              <div className={`text-xs leading-tight transition-colors ${
-                scrolled ? 'text-gray-600' : 'text-white/70'
-              }`}>
-                {site.tagline}
-              </div>
-            </div>
-          </Link>
-
-          {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                onClick={link.href === '/' ? handleHomeClick : undefined}
-                className={`font-medium text-sm tracking-wide transition-colors ${textColor} ${hoverColor}`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Link
-              to="/#contact"
-              className="bg-rust hover:bg-rust-dark text-white px-6 py-2.5 rounded-full font-medium text-sm transition-all hover:shadow-lg hover:shadow-rust/25"
-            >
-              {navCtaText}
-            </Link>
-          </div>
-
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className={`md:hidden p-2 rounded-lg transition-colors ${textColor}`}
-            aria-label="Toggle menu"
+    <header className="sticky top-0 z-40 border-b border-[#E0DBD7] bg-white/95 backdrop-blur md:hidden">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3">
+        <button
+          onClick={() => scrollTo("home")}
+          className="flex min-w-0 items-center gap-2 text-left"
+        >
+          <img
+            src={footerLogo}
+            alt="Ozzy's Excavation logo"
+            className="h-10 w-auto shrink-0"
+          />
+          <span className="min-w-0">
+            <span className="block truncate text-base font-black tracking-tight text-[#40190E]">
+              Ozzy's Excavation
+            </span>
+            <span className="block truncate text-[0.65rem] font-bold uppercase tracking-[0.18em] text-[#B5553A]">
+              Septic & Earthworks
+            </span>
+          </span>
+        </button>
+        <div className="flex shrink-0 items-center gap-2">
+          <a
+            href="tel:+17782091414"
+            className="rounded-full border-2 border-[#B5553A] px-4 py-3 text-sm font-black text-[#B5553A]"
           >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              {menuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
+            Call
+          </a>
+          <Link
+            to="/#quote"
+            className="rounded-full bg-[#D5560B] px-4 py-3 text-sm font-black text-white"
+          >
+            Quote
+          </Link>
         </div>
+      </nav>
+    </header>
+  );
+}
 
-        {/* Mobile Menu */}
-        {menuOpen && (
-          <div className="md:hidden mt-4 pb-4 animate-fade-in-up bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-4 mx-2">
-            <div className="flex flex-col gap-3">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  onClick={(e) => {
-                    setMenuOpen(false)
-                    if (link.href === '/') handleHomeClick(e)
-                  }}
-                  className="text-earth font-medium py-2 hover:text-rust transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <Link
-                to="/#contact"
-                onClick={() => setMenuOpen(false)}
-                className="bg-rust text-white text-center px-6 py-3 rounded-full font-medium hover:bg-rust-dark transition-all"
-              >
-                {navCtaText}
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-    </nav>
-  )
+export default function Navbar() {
+  return (
+    <>
+      <DesktopNavbar />
+      <MobileNavbar />
+    </>
+  );
 }
