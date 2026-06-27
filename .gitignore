@@ -31,3 +31,4 @@ dist-ssr
 Ozzys Excavtion Assets/
 src/assets/
 tmp/
+.DS_Store
